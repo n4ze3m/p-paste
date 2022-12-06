@@ -1,18 +1,17 @@
 import { Handlers } from "$fresh/server.ts";
 import { v1 } from "https://deno.land/std@0.167.0/uuid/mod.ts"
-import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
 import { connect } from "https://deno.land/x/redis@v0.27.4/mod.ts";
-const { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD } = config();
 export const handler: Handlers = {
     async POST(req, _ctx) {
         const body = await req.text();
         const json = JSON.parse(body);
 
         const redis = await connect({
-            hostname: REDIS_HOST,
-            port: parseInt(REDIS_PORT),
-            password: REDIS_PASSWORD,
-        });
+            hostname: Deno.env.get("REDIS_HOST")!,
+            port: parseInt(Deno.env.get("REDIS_PORT")!),
+            password:  Deno.env.get("REDIS_PASSWORD")!,
+          });
+        
 
 
         if (!(json.content && json.type)) {
