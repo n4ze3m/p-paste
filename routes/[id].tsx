@@ -19,7 +19,7 @@ export const handler: Handler<Paste> = async (
   const redis = await connect({
     hostname: Deno.env.get("REDIS_HOST")!,
     port: parseInt(Deno.env.get("REDIS_PORT")!),
-    password:  Deno.env.get("REDIS_PASSWORD")!,
+    password: Deno.env.get("REDIS_PASSWORD")!,
   });
 
   const project = await redis.get(`paste:${ctx.params.id}`);
@@ -32,13 +32,17 @@ export const handler: Handler<Paste> = async (
   });
 };
 
+const textFn = (content: string, type: string) => {
+  return ["txt", "md"].includes(type) ? content : `
+   \`\`\`${type}
+${content}
+   \`\`\`
+     `;
+  // return content;
+};
+
 export default function Greet(props: PageProps<Paste>) {
-  
-  const html = gfm.render(`
-  \`\`\`${props.data.type}
-    ${props.data.content}
-  \`\`\`
-    `);
+  const html = gfm.render(textFn(props.data.content, props.data.type));
 
   return (
     <>
@@ -47,16 +51,18 @@ export default function Greet(props: PageProps<Paste>) {
         <link rel="stylesheet" href={asset("/prism.css")} />
       </Head>
       <Page>
-      <BackButton />
-        <div
-          className="markdown-body"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-        <ViewBtns
-          content={props.data.content}
-          type={props.data.type}
-          id={props.data.id}
-        />
+        <div className=" p-4 mx-auto max-w-screen-md w-full h-full mt-10">
+          <BackButton />
+          <div className="markdown-body p-4 bg-white rounded shadow-lg">
+            {/* rome-ignore lint/security/noDangerouslySetInnerHtml: I like that lol */}
+            <div dangerouslySetInnerHTML={{ __html: html }} />
+          </div>
+          <ViewBtns
+            content={props.data.content}
+            type={props.data.type}
+            id={props.data.id}
+          />
+        </div>
       </Page>
     </>
   );

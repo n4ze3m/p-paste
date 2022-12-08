@@ -31,14 +31,16 @@ const languages = [
   {
     name: "Python",
     value: "py",
-  }
+  },
 ];
 
 const Home = () => {
   const [text, setText] = useState("");
   const [language, setLanguage] = useState("txt");
+  const [loading, setLoading] = useState(false);
 
   const onShare = async () => {
+    setLoading(true);
     const res = await fetch("/api/create", {
       method: "POST",
       body: JSON.stringify({
@@ -60,9 +62,10 @@ const Home = () => {
       <div class="flex gap-2 w-full mt-4">
         <Button
           onClick={onShare}
+          disabled={loading}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-1/2"
         >
-          Share
+          {loading ? "Saving..." : "Share"}
         </Button>
         <Select
           onChange={(e) => setLanguage((e.target as HTMLInputElement).value)}

@@ -19,9 +19,13 @@ ol.nested li:before {
 	content: counters(item, ".") ". ";
 	counter-increment: item;
 }
+.markdown-body {
+  padding: 1em;
+}
 
 .markdown-body ul {
   list-style: disc;
+  
 }
 
 .markdown-body ol {
